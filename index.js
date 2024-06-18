@@ -18,7 +18,7 @@ const getData = async () => {
 
     let items = []
     try {
-        const url = `http://mapaconflitos.com/wardata`
+        const url = `https://mapaconflitos.com/wardata`
         const response = await fetch(url, {
             method: "GET",
             mode: "cors",
