@@ -1,17 +1,34 @@
 var map = null
 var markers = []
 
+const loading = (show = true) => {
+    const block = document.getElementById("block")
+    if (block) {
+        block.style.display = show ? "none" : ""
+    }
+
+    const loading = document.getElementById("loading")
+    if (loading) {
+        loading.style.display = show ? "block" : "none"
+    }
+}
+
 const getData = async () => {
+    loading(true)
+
+    let items = []
     try {
         const url = `http://mapaconflitos.com/wardata`
         const response = await fetch(url)
         const data = await response.json()
-        return data && data.status == 200 && data.success && Array.isArray(data.data) ? data.data : []
+        items = data && data.status == 200 && data.success && Array.isArray(data.data) ? data.data : []
     } catch (error) {
         console.log("Erro ao carregar dados da API")
         console.log(error)
-        return []
     }
+
+    loading(false)
+    return items
 }
 
 const startMap = async () => {
@@ -23,7 +40,7 @@ const startMap = async () => {
 
     map = L.map('map')
         .setView(center, 13)
-        .setMinZoom(5)
+        .setMinZoom(3)
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -50,9 +67,9 @@ const center = (item = {}) => {
 }
 
 const buildOptions = (items = []) => {
-    const doc = document.getElementById("options")
-    if (!doc) {
-        console.log(`Elemento "options" não encontrado`)
+    const cities = document.getElementById("cities")
+    if (!cities) {
+        console.log(`Elemento "cities" não encontrado`)
         return
     }
 
@@ -96,7 +113,7 @@ const buildOptions = (items = []) => {
             div.appendChild(divOccurrence)
         }
 
-        doc.appendChild(div)
+        cities.appendChild(div)
     }
 }
 
