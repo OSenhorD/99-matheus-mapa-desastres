@@ -19,7 +19,10 @@ const getData = async () => {
     let items = []
     try {
         const url = `http://mapaconflitos.com/wardata`
-        const response = await fetch(url)
+        const response = await fetch(url, {
+            method: "GET",
+            mode: "cors",
+        })
         const data = await response.json()
         items = data && data.status == 200 && data.success && Array.isArray(data.data) ? data.data : []
     } catch (error) {
@@ -73,27 +76,34 @@ const buildOptions = (items = []) => {
         return
     }
 
-    items = items.sort((a, b) => a.admin1 > b.admin1 ? 1 : (a.admin1 < b.admin1 ? - 1 : 0))
+    items = items.sort((a, b) => a.country > b.country ? 1 : (a.country < b.country ? - 1 : 0))
 
     while (items.length > 0) {
-        const state = items[0].admin1
+        const country = items[0].country
+        const state = items
+            .filter(item => item.country == country)
+            .sort((a, b) => a.admin1 > b.admin1 ? 1 : (a.admin1 < b.admin1 ? - 1 : 0))
+        [0].admin1
+
         const city = items
-            .filter(item => item.admin1 == state)
+            .filter(item => item.country == country && item.admin1 == state)
             .sort((a, b) => a.admin2 > b.admin2 ? 1 : (a.admin2 < b.admin2 ? - 1 : 0))
         [0].admin2
 
-        const occurrences = items.filter(item => item.admin1 == state && item.admin2 == city)
-        items = items
-            .filter(item => !(item.admin1 == state && item.admin2 == city))
+        const occurrences = items
+            .filter(item => item.country == country && item.admin1 == state && item.admin2 == city)
             .sort((a, b) => {
                 const dateA = new Date(`${a.event_date} 00:00:00`)
                 const dateB = new Date(`${b.event_date} 00:00:00`)
                 return dateA.getTime() > dateB.getTime() ? 1 : (dateA.getTime() < dateB.getTime() ? - 1 : 0)
             })
 
+        items = items
+            .filter(item => !(item.country == country && item.admin1 == state && item.admin2 == city))
+
         const div = document.createElement("div")
         div.classList.add("city")
-        div.innerHTML = `${state} - ${city}`
+        div.innerHTML = `${country} - ${state} - ${city}`
 
         for (const occurrence of occurrences) {
             const spanDate = document.createElement("span")
