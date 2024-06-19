@@ -49,9 +49,16 @@ const startMap = async () => {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map)
 
+    // Adicione aqui o caminho das imagens para cada tipo de marcador
+    const images = {
+        "Battles": "images/battle.png",
+    }
+
     markers = []
     for (const item of items) {
-        const maker = L.marker([item.latitude, item.longitude])
+        const iconUrl = images[item.event_type]
+        const icon = iconUrl ? L.icon({ iconUrl, iconSize: [50, 50] }) : null
+        const maker = L.marker([item.latitude, item.longitude], iconUrl ? { icon } : null)
             .addTo(map)
             .bindPopup(`${item.notes}`)
         markers.push(maker)
