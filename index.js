@@ -1,3 +1,9 @@
+// Adicione aqui o caminho das imagens para cada tipo de marcador
+const images = {
+    "Battles": "images/battle.png",
+}
+
+// Não alterar
 var map = null
 var markers = []
 
@@ -49,10 +55,6 @@ const startMap = async () => {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map)
 
-    // Adicione aqui o caminho das imagens para cada tipo de marcador
-    const images = {
-        "Battles": "images/battle.png",
-    }
 
     markers = []
     for (const item of items) {
